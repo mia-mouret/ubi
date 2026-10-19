@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" translate="no">
 <head>
   <meta charset="UTF-8" />
+  <meta name="google" content="notranslate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Un salaire à vie</title>
   <meta name="description" content="Un salaire pour chaque personne vivante en France, de la naissance à la mort, financé en redirigeant retraites, chômage, allocations et aides aux entreprises.">
@@ -432,7 +433,7 @@ function setLang(l) {
   });
   try { localStorage.setItem('lang', l); } catch (e) {}
   const u = new URL(location.href);
-  u.searchParams.set('lang', l);
+  if (l === 'fr') u.searchParams.delete('lang'); else u.searchParams.set('lang', l);
   history.replaceState(null, '', u);
   render();
 }
