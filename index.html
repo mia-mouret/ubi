@@ -16,8 +16,10 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Tu es vivant ? Tu es payé. 1 135 € par mois pour chaque adulte, 350 € par enfant. salaireavie.net">
   <meta property="og:locale" content="fr_FR">
-  <meta property="og:locale:alternate" content="en_GB">
   <meta name="twitter:card" content="summary_large_image">
+  <script>
+    try { const t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -27,12 +29,20 @@
       --blue: #1f3fbf; --red: #d6363c; --gold: #e8a317; --green: #1f8a5b;
       --blue-soft: #e5eafc; --red-soft: #fbe6e6;
     }
+    :root { color-scheme: light; }
     @media (prefers-color-scheme: dark) {
-      :root {
+      :root:not([data-theme=light]) {
+        color-scheme: dark;
         --bg: #14130f; --paper: #1d1b16; --ink: #f2ede4; --muted: #a59d90; --line: #36322a;
         --blue: #7d95ff; --red: #ff7a7e; --gold: #f5bd45; --green: #4fc48f;
         --blue-soft: #222a4d; --red-soft: #4a2426;
       }
+    }
+    :root[data-theme=dark] {
+      color-scheme: dark;
+      --bg: #14130f; --paper: #1d1b16; --ink: #f2ede4; --muted: #a59d90; --line: #36322a;
+      --blue: #7d95ff; --red: #ff7a7e; --gold: #f5bd45; --green: #4fc48f;
+      --blue-soft: #222a4d; --red-soft: #4a2426;
     }
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.6 Inter, system-ui, sans-serif; }
@@ -50,7 +60,7 @@
     .amounts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 40px; }
     .amount { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 24px; }
     .amount b { display: block; font-family: Fraunces, serif; font-size: 3rem; line-height: 1; color: var(--blue); }
-    .amount span { color: var(--muted); }
+    .amount > span { color: var(--muted); }
 
     .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 32px; }
     .card { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 24px; }
@@ -134,73 +144,78 @@
       .life { flex-direction: column; }
       .vs { grid-template-columns: 1fr; }
     }
-    .lang { position: absolute; top: 18px; right: 20px; display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--paper); }
-    .lang button { font: 700 .8rem Inter, sans-serif; letter-spacing: .06em; padding: 6px 12px; border: 0; background: none; color: var(--muted); cursor: pointer; }
-    .lang button[aria-pressed=true] { background: var(--ink); color: var(--bg); }
+    .theme { position: absolute; top: 18px; right: 20px; display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--paper); }
+    .theme button { display: grid; place-items: center; width: 36px; height: 30px; padding: 0; border: 0; background: none; color: var(--muted); cursor: pointer; }
+    .theme button[aria-pressed=true] { background: var(--ink); color: var(--bg); }
+    .theme svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   </style>
 </head>
 <body>
 <div class="flag"></div>
-<nav class="lang" aria-label="Langue / Language"><button data-lang="fr" lang="fr">FR</button><button data-lang="en" lang="en">EN</button></nav>
+<nav class="theme" aria-label="Thème">
+  <button data-theme="system" title="Thème du système" aria-label="Thème du système"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button>
+  <button data-theme="light" title="Thème clair" aria-label="Thème clair"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+  <button data-theme="dark" title="Thème sombre" aria-label="Thème sombre"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+</nav>
 
 <header class="wrap">
-  <div class="kicker" data-i18n="kHero">Proposition · Le salaire à vie</div>
-  <h1 data-i18n="h1">Tu es vivant&nbsp;?<br><em>Tu es payé.</em></h1>
-  <p class="lead" style="margin-top:1.2em" data-i18n="leadHero">Un salaire versé à chaque personne qui vit en France, de la naissance à la mort, sans condition et sans dossier. Financé sans un euro d'impôt nouveau&nbsp;: on redirige l'argent que l'on dépense déjà en retraites, chômage, allocations et aides aux entreprises.</p>
+  <div class="kicker">Proposition · Le salaire à vie</div>
+  <h1>Tu es vivant&nbsp;?<br><em>Tu es payé.</em></h1>
+  <p class="lead" style="margin-top:1.2em">Un salaire versé à chaque personne qui vit en France, de la naissance à la mort, sans condition et sans dossier. Financé sans un euro d'impôt nouveau&nbsp;: on redirige l'argent que l'on dépense déjà en retraites, chômage, allocations et aides aux entreprises.</p>
   <div class="amounts">
-    <div class="amount"><b data-m="adult">1&nbsp;135&nbsp;€</b><span data-i18n="amAdult">par mois, pour chaque adulte, à vie</span></div>
-    <div class="amount"><b data-m="child">350&nbsp;€</b><span data-i18n="amChild">par mois et par enfant, versés aux parents dès la naissance</span></div>
-    <div class="amount"><b>+&nbsp;100&nbsp;%</b><span data-i18n="amWork">de ce que tu gagnes en travaillant, en plus, toujours</span></div>
+    <div class="amount"><b><span data-adult>1 135</span>&nbsp;€</b><span>par mois, pour chaque adulte, à vie</span></div>
+    <div class="amount"><b><span data-child>350</span>&nbsp;€</b><span>par mois et par enfant, versés aux parents dès la naissance</span></div>
+    <div class="amount"><b>+&nbsp;100&nbsp;%</b><span>de ce que tu gagnes en travaillant, en plus, toujours</span></div>
   </div>
 </header>
 
 <section>
   <div class="wrap">
-    <div class="kicker" data-i18n="kChange">Ce que ça change</div>
-    <h2 data-i18n="hChange">Une seule règle, quatre libertés.</h2>
+    <div class="kicker">Ce que ça change</div>
+    <h2>Une seule règle, quatre libertés.</h2>
     <div class="cards">
-      <div class="card star"><div class="ico">🌅</div><h3 data-i18n="c1h">La retraite quand tu veux</h3><p data-i18n="c1p">Plus d'âge légal, plus de trimestres à compter. Tu t'arrêtes à 40, 55 ou 70 ans&nbsp;: ton salaire de base continue.</p></div>
-      <div class="card"><div class="ico">🧭</div><h3 data-i18n="c2h">Changer de vie sans peur</h3><p data-i18n="c2p">Perdre son emploi, se former, créer une boîte, s'occuper d'un proche&nbsp;: le salaire tombe quand même. Le chômage devient une transition.</p></div>
-      <div class="card"><div class="ico">🪪</div><h3 data-i18n="c3h">Un seul guichet</h3><p data-i18n="c3p">Une seule question&nbsp;: es-tu vivant&nbsp;? Oui&nbsp;: le virement part. Fini les dossiers, les contrôles, les droits non réclamés.</p></div>
-      <div class="card"><div class="ico">💼</div><h3 data-i18n="c4h">Travailler paie toujours</h3><p data-i18n="c4p">Le salaire de base ne baisse jamais quand tu gagnes plus. Chaque heure travaillée s'ajoute, sans effet de seuil.</p></div>
+      <div class="card star"><div class="ico">🌅</div><h3>La retraite quand tu veux</h3><p>Plus d'âge légal, plus de trimestres à compter. Tu t'arrêtes à 40, 55 ou 70 ans&nbsp;: ton salaire de base continue.</p></div>
+      <div class="card"><div class="ico">🧭</div><h3>Changer de vie sans peur</h3><p>Perdre son emploi, se former, créer une boîte, s'occuper d'un proche&nbsp;: le salaire tombe quand même. Le chômage devient une transition.</p></div>
+      <div class="card"><div class="ico">🪪</div><h3>Un seul guichet</h3><p>Une seule question&nbsp;: es-tu vivant&nbsp;? Oui&nbsp;: le virement part. Fini les dossiers, les contrôles, les droits non réclamés.</p></div>
+      <div class="card"><div class="ico">💼</div><h3>Travailler paie toujours</h3><p>Le salaire de base ne baisse jamais quand tu gagnes plus. Chaque heure travaillée s'ajoute, sans effet de seuil.</p></div>
     </div>
     <div class="life">
-      <div class="kid" data-i18n="life1">0 → 18 ans<small><span data-m="child">350&nbsp;€</span> / mois aux parents</small></div>
-      <div class="adult" data-i18n="life2">18 ans → … tant que tu veux travailler<small><span data-m="adult">1&nbsp;135&nbsp;€</span> / mois + ton salaire</small></div>
-      <div class="free" data-i18n="life3">… → la fin<small><span data-m="adult">1&nbsp;135&nbsp;€</span> / mois, libre</small></div>
+      <div class="kid">0 → 18 ans<small><span data-child>350</span> € / mois aux parents</small></div>
+      <div class="adult">18 ans → … tant que tu veux travailler<small><span data-adult>1 135</span> € / mois + ton salaire</small></div>
+      <div class="free">… → la fin<small><span data-adult>1 135</span> € / mois, libre</small></div>
     </div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="kicker" data-i18n="kWork">Travailler en plus</div>
-    <h2 data-i18n="hWork">La base est un plancher, jamais un plafond.</h2>
-    <p class="lead" data-i18n="leadWork">Ce que tu gagnes en travaillant s'ajoute au salaire à vie. Exemples pour un adulte, en net par mois.</p>
+    <div class="kicker">Travailler en plus</div>
+    <h2>La base est un plancher, jamais un plafond.</h2>
+    <p class="lead">Ce que tu gagnes en travaillant s'ajoute au salaire à vie. Exemples pour un adulte, en net par mois.</p>
     <div class="bars" id="bars"></div>
-    <div class="legend"><span><i style="background:var(--blue)"></i><span data-i18n="legBase">Salaire à vie</span></span><span><i style="background:var(--gold)"></i><span data-i18n="legWork">Revenu du travail</span></span></div>
+    <div class="legend"><span><i style="background:var(--blue)"></i>Salaire à vie</span><span><i style="background:var(--gold)"></i>Revenu du travail</span></div>
   </div>
 </section>
 
 <section id="financement">
   <div class="wrap">
-    <div class="kicker" data-i18n="kFund">Le financement</div>
-    <h2 data-i18n="hFund">Combien peut-on verser&nbsp;?</h2>
-    <p class="lead" data-i18n="leadFund">Cinq familles de dépenses publiques que le salaire à vie remplace. Les prélèvements qui les financent aujourd'hui restent en place&nbsp;; seule leur destination change. Coche, décoche, règle&nbsp;: le montant se recalcule.</p>
+    <div class="kicker">Le financement</div>
+    <h2>Combien peut-on verser&nbsp;?</h2>
+    <p class="lead">Cinq familles de dépenses publiques que le salaire à vie remplace. Les prélèvements qui la financent aujourd'hui restent en place&nbsp;; seule leur destination change. Coche, décoche, règle&nbsp;: le montant se recalcule.</p>
     <div class="sim">
       <div class="cuts" id="cuts"></div>
       <div class="result">
-        <div data-i18n="rTitle">Salaire à vie par adulte</div>
-        <div class="big" data-m="adult">1&nbsp;135&nbsp;€</div>
-        <div class="sub" data-i18n="rSub">par mois, pour <span data-n="adults">55,1</span> millions d'adultes</div>
-        <label><span data-i18n="rChild">Montant par enfant&nbsp;: <span data-m="child">350&nbsp;€</span> / mois</span>
+        <div>Salaire à vie par adulte</div>
+        <div class="big"><span data-adult>1 135</span>&nbsp;€</div>
+        <div class="sub">par mois, pour <span id="nAdults"></span> millions d'adultes</div>
+        <label>Montant par enfant&nbsp;: <span data-child>350</span>&nbsp;€ / mois
           <input type="range" id="child" min="0" max="1000" step="50" value="350"></label>
         <div class="mix" id="mix"></div>
         <ul class="mix-legend" id="mixLegend"></ul>
         <table>
-          <tr><td data-i18n="tBudget">Budget redirigé</td><td id="tBudget"></td></tr>
-          <tr><td data-i18n="tKids">Enfants (<span data-n="kids">14</span> M)</td><td id="tKids"></td></tr>
-          <tr><td data-i18n="tAdults">Reste pour les adultes</td><td id="tAdults"></td></tr>
+          <tr><td>Budget redirigé</td><td id="tBudget"></td></tr>
+          <tr><td>Enfants (<span id="nKids"></span> M)</td><td id="tKids"></td></tr>
+          <tr><td>Reste pour les adultes</td><td id="tAdults"></td></tr>
         </table>
       </div>
     </div>
@@ -209,14 +224,14 @@
 
 <section>
   <div class="wrap">
-    <div class="kicker" data-i18n="kFaq">Les questions honnêtes</div>
-    <h2 data-i18n="hFaq">Ce qu'il faut regarder en face.</h2>
+    <div class="kicker">Les questions honnêtes</div>
+    <h2>Ce qu'il faut regarder en face.</h2>
     <div class="faq">
-      <details><summary data-i18n="q1">Qu'est-ce qui reste comme aujourd'hui&nbsp;?</summary><p data-i18n="a1">La santé (Sécurité sociale, hôpital), la compensation du handicap (PCH) et les pensions d'invalidité, la dépendance (APA), l'école, les crèches, l'hébergement d'urgence. Le salaire à vie remplace les revenus de remplacement, pas les services publics.</p></details>
-      <details><summary data-i18n="q2">Et les retraités d'aujourd'hui&nbsp;?</summary><p data-i18n="a2">La pension moyenne est d'environ 1&nbsp;600&nbsp;€ brut par mois, au-dessus du salaire à vie. Le passage se fait donc par génération&nbsp;: les droits déjà acquis restent payés, et le nouveau système monte en charge à mesure que les pensions s'éteignent. Les chiffres de cette page décrivent le système une fois installé.</p></details>
-      <details><summary data-i18n="q3">Couper les aides aux entreprises, c'est sans conséquence&nbsp;?</summary><p data-i18n="a3">Sur les 211&nbsp;Md€ recensés par le Sénat, environ 75&nbsp;Md€ sont des allègements de cotisations sur les bas salaires. Les supprimer augmente le coût du travail au niveau du SMIC. En contrepartie, chaque salarié touche déjà le salaire à vie&nbsp;: la négociation salariale change de nature. Le curseur du simulateur permet de n'en couper qu'une partie.</p></details>
-      <details><summary data-i18n="q4">Qui paie, concrètement&nbsp;?</summary><p data-i18n="a4">Les mêmes qu'aujourd'hui&nbsp;: cotisations, CSG et impôts restent au même niveau. L'argent qui finançait des pensions proportionnelles aux salaires passés, des allocations sous conditions et des niches fiscales finance un montant égal pour tous.</p></details>
-      <details><summary data-i18n="q5">Les chiffres sont-ils précis&nbsp;?</summary><p data-i18n="a5">Ce sont des ordres de grandeur. Les montants viennent des comptes de la protection sociale 2024 (DREES) et du rapport du Sénat sur les aides de 2023&nbsp;; la part remplacée de chaque ligne et le coût de gestion économisé sont des estimations, indiquées comme telles.</p></details>
+      <details><summary>Qu'est-ce qui reste comme aujourd'hui&nbsp;?</summary><p>La santé (Sécurité sociale, hôpital), la compensation du handicap (PCH) et les pensions d'invalidité, la dépendance (APA), l'école, les crèches, l'hébergement d'urgence. Le salaire à vie remplace les revenus de remplacement, pas les services publics.</p></details>
+      <details><summary>Et les retraités d'aujourd'hui&nbsp;?</summary><p>La pension moyenne est d'environ 1&nbsp;600&nbsp;€ brut par mois, au-dessus du salaire à vie. Le passage se fait donc par génération&nbsp;: les droits déjà acquis restent payés, et le nouveau système monte en charge à mesure que les pensions s'éteignent. Les chiffres de cette page décrivent le système une fois installé.</p></details>
+      <details><summary>Couper les aides aux entreprises, c'est sans conséquence&nbsp;?</summary><p>Sur les 211&nbsp;Md€ recensés par le Sénat, environ 75&nbsp;Md€ sont des allègements de cotisations sur les bas salaires. Les supprimer augmente le coût du travail au niveau du SMIC. En contrepartie, chaque salarié touche déjà le salaire à vie&nbsp;: la négociation salariale change de nature. Le curseur du simulateur permet de n'en couper qu'une partie.</p></details>
+      <details><summary>Qui paie, concrètement&nbsp;?</summary><p>Les mêmes qu'aujourd'hui&nbsp;: cotisations, CSG et impôts restent au même niveau. L'argent qui finançait des pensions proportionnelles aux salaires passés, des allocations sous conditions et des niches fiscales finance un montant égal pour tous.</p></details>
+      <details><summary>Les chiffres sont-ils précis&nbsp;?</summary><p>Ce sont des ordres de grandeur. Les montants viennent des comptes de la protection sociale 2024 (DREES) et du rapport du Sénat sur les aides de 2023&nbsp;; la part remplacée de chaque ligne et le coût de gestion économisé sont des estimations, indiquées comme telles.</p></details>
     </div>
   </div>
 </section>
@@ -225,179 +240,60 @@
   <div class="wrap">
     <div class="kicker">Sources</div>
     <ul>
-      <li data-i18n="s1">DREES, <a href="https://drees.solidarites-sante.gouv.fr/publications-communique-de-presse/panoramas-de-la-drees/251217-protection-sociale-france-europe-2024">La protection sociale en France et en Europe en 2024</a> (édition 2025)&nbsp;: vieillesse-survie 426,7&nbsp;Md€, emploi 51,1, famille 65,8, logement 16,1, pauvreté-exclusion 34,0.</li>
-      <li data-i18n="s2">Sénat, commission d'enquête sur les aides publiques aux entreprises, juillet 2025&nbsp;: <a href="https://www.publicsenat.fr/actualites/economie/211-milliards-deuros-daides-publiques-aux-entreprises-sur-quoi-repose-le-calcul-de-la-commission-denquete-du-senat">211&nbsp;Md€ en 2023</a>, dont 88&nbsp;Md€ de dépenses fiscales et 75&nbsp;Md€ d'allègements de cotisations.</li>
-      <li data-i18n="s3">Insee, <a href="https://www.insee.fr/fr/statistiques/8719824">Bilan démographique 2025</a>&nbsp;: 69,1&nbsp;millions d'habitants au 1<sup>er</sup>&nbsp;janvier 2026. Moins de 18&nbsp;ans estimés à 14,0&nbsp;millions.</li>
-      <li data-i18n="s4">Projet de loi de finances 2025, annexe Voies et moyens, <a href="https://www.moneyvox.fr/impot/actualites/100196/impot-sur-le-revenu-le-top-5-des-niches-fiscales-les-plus-couteuses-en-2025">via Moneyvox</a>&nbsp;: crédit d'impôt emploi à domicile 6,86&nbsp;Md€, abattement de 10&nbsp;% sur les pensions 4,96&nbsp;Md€.</li>
-      <li data-i18n="s5">DREES, <a href="https://drees.solidarites-sante.gouv.fr/publications-communique-de-presse/etudes-et-resultats/260506-non-recours-au-rsa-fin-2021">non-recours au RSA fin 2021</a>&nbsp;: 33 à 37&nbsp;% des foyers éligibles ne le perçoivent pas.</li>
-      <li data-i18n="s6">Cour des comptes, <a href="https://www.actu-juridique.fr/fiscalite/fiscal-finances/fiscalite-et-famille-la-cour-des-comptes-propose-des-evolutions/">fiscalité et famille</a>&nbsp;: 28&nbsp;Md€ en 2021.</li>
-      <li data-i18n="s7">DREES, <a href="https://www.drees.solidarites-sante.gouv.fr/sites/default/files/2025-12/CPS2025%20-%20Tableau%20d%C3%A9taill%C3%A9%204%20-%20Prestations%20d%C3%A9taill%C3%A9es%20de%20protection%20sociale%20par%20risque%20de%202019%20%C3%A0%202024.pdf">prestations détaillées 2024</a>&nbsp;: indemnités journalières maladie 11,8&nbsp;Md€.</li>
-      <li data-i18n="s8">DREES, <a href="https://drees.solidarites-sante.gouv.fr/publications-communique-de-presse-documents-de-reference/panoramas-de-la-drees/241030_Retraites_2024">Les retraités et les retraites</a>, édition 2024&nbsp;: pension moyenne.</li>
+      <li>DREES, <a href="https://drees.solidarites-sante.gouv.fr/publications-communique-de-presse/panoramas-de-la-drees/251217-protection-sociale-france-europe-2024">La protection sociale en France et en Europe en 2024</a> (édition 2025)&nbsp;: vieillesse-survie 426,7&nbsp;Md€, emploi 51,1, famille 65,8, logement 16,1, pauvreté-exclusion 34,0.</li>
+      <li>Sénat, commission d'enquête sur les aides publiques aux entreprises, juillet 2025&nbsp;: <a href="https://www.publicsenat.fr/actualites/economie/211-milliards-deuros-daides-publiques-aux-entreprises-sur-quoi-repose-le-calcul-de-la-commission-denquete-du-senat">211&nbsp;Md€ en 2023</a>, dont 88&nbsp;Md€ de dépenses fiscales et 75&nbsp;Md€ d'allègements de cotisations.</li>
+      <li>Insee, <a href="https://www.insee.fr/fr/statistiques/8719824">Bilan démographique 2025</a>&nbsp;: 69,1&nbsp;millions d'habitants au 1<sup>er</sup>&nbsp;janvier 2026. Moins de 18&nbsp;ans estimés à 14,0&nbsp;millions.</li>
+      <li>Projet de loi de finances 2025, annexe Voies et moyens, <a href="https://www.moneyvox.fr/impot/actualites/100196/impot-sur-le-revenu-le-top-5-des-niches-fiscales-les-plus-couteuses-en-2025">via Moneyvox</a>&nbsp;: crédit d'impôt emploi à domicile 6,86&nbsp;Md€, abattement de 10&nbsp;% sur les pensions 4,96&nbsp;Md€.</li>
+      <li>DREES, <a href="https://drees.solidarites-sante.gouv.fr/publications-communique-de-presse/etudes-et-resultats/260506-non-recours-au-rsa-fin-2021">non-recours au RSA fin 2021</a>&nbsp;: 33 à 37&nbsp;% des foyers éligibles ne le perçoivent pas.</li>
+      <li>Cour des comptes, <a href="https://www.actu-juridique.fr/fiscalite/fiscal-finances/fiscalite-et-famille-la-cour-des-comptes-propose-des-evolutions/">fiscalité et famille</a>&nbsp;: 28&nbsp;Md€ en 2021.</li>
+      <li>DREES, <a href="https://www.drees.solidarites-sante.gouv.fr/sites/default/files/2025-12/CPS2025%20-%20Tableau%20d%C3%A9taill%C3%A9%204%20-%20Prestations%20d%C3%A9taill%C3%A9es%20de%20protection%20sociale%20par%20risque%20de%202019%20%C3%A0%202024.pdf">prestations détaillées 2024</a>&nbsp;: indemnités journalières maladie 11,8&nbsp;Md€.</li>
+      <li>DREES, <a href="https://drees.solidarites-sante.gouv.fr/publications-communique-de-presse-documents-de-reference/panoramas-de-la-drees/241030_Retraites_2024">Les retraités et les retraites</a>, édition 2024&nbsp;: pension moyenne.</li>
     </ul>
   </div>
 </section>
 
-<footer class="wrap" data-i18n="footer">Une plaquette pour ouvrir le débat. Montants en euros de 2024, hors inflation.</footer>
+<footer class="wrap">Une plaquette pour ouvrir le débat. Montants en euros de 2024, hors inflation.</footer>
 <div class="flag"></div>
 
 <script>
-// The French text lives in the HTML; EN holds its English twin, key for key.
-const EN = {
-  title: 'A lifetime salary',
-  description: 'A salary for every person alive in France, from birth to death, funded by redirecting pensions, unemployment, benefits and corporate subsidies.',
-  kHero: 'Proposal · A lifetime salary',
-  h1: 'You\'re alive?<br><em>You get paid.</em>',
-  leadHero: 'A salary paid to every person living in France, from birth to death, with no conditions and no paperwork. Funded without a single euro of new tax: we redirect the money already spent on pensions, unemployment, benefits and corporate subsidies.',
-  amAdult: 'a month, for every adult, for life',
-  amChild: 'a month per child, paid to the parents from birth',
-  amWork: 'of what you earn from work, on top, always',
-  kChange: 'What it changes',
-  hChange: 'One rule, four freedoms.',
-  c1h: 'Retire when you want',
-  c1p: 'No legal retirement age, no contribution quarters to count. Stop at 40, 55 or 70: your base salary keeps coming.',
-  c2h: 'Change your life without fear',
-  c2p: 'Losing your job, retraining, starting a business, caring for a relative: the salary still arrives. Unemployment becomes a transition.',
-  c3h: 'One single office',
-  c3p: 'One question: are you alive? Yes: the payment goes out. No more files, checks or unclaimed benefits.',
-  c4h: 'Work always pays',
-  c4p: 'The base salary never drops when you earn more. Every hour worked adds up, with no cliff edge.',
-  life1: '0 → 18<small><span data-m="child"></span> / month to the parents</small>',
-  life2: '18 → … as long as you want to work<small><span data-m="adult"></span> / month + your wages</small>',
-  life3: '… → the end<small><span data-m="adult"></span> / month, free</small>',
-  kWork: 'Working on top',
-  hWork: 'The base is a floor, never a ceiling.',
-  leadWork: 'What you earn from work adds to the lifetime salary. Examples for one adult, net per month.',
-  legBase: 'Lifetime salary',
-  legWork: 'Earned income',
-  kFund: 'Funding',
-  hFund: 'How much can we pay?',
-  leadFund: 'Five families of public spending that the lifetime salary replaces. The taxes and contributions that fund them today stay in place; only where the money goes changes. Tick, untick, adjust: the amount updates.',
-  rTitle: 'Lifetime salary per adult',
-  rSub: 'a month, for <span data-n="adults"></span> million adults',
-  rChild: 'Amount per child: <span data-m="child"></span> / month',
-  tBudget: 'Redirected budget',
-  tKids: 'Children (<span data-n="kids"></span> M)',
-  tAdults: 'Left for adults',
-  kFaq: 'The honest questions',
-  hFaq: 'What we have to face.',
-  q1: 'What stays as it is today?',
-  a1: 'Healthcare (social security, hospitals), disability support (PCH) and invalidity pensions, long-term care (APA), schools, nurseries, emergency housing. The lifetime salary replaces replacement incomes, not public services.',
-  q2: 'And today\'s retirees?',
-  a2: 'The average pension is about €1,600 gross a month, above the lifetime salary. So the switch happens generation by generation: rights already earned keep being paid, and the new system ramps up as those pensions phase out. The figures on this page describe the system once it is in place.',
-  q3: 'Cutting corporate subsidies, with no consequences?',
-  a3: 'Of the €211bn counted by the Senate, about €75bn are cuts to social contributions on low wages. Removing them raises labour costs at minimum-wage level. In return, every employee already receives the lifetime salary: wage bargaining changes in nature. The simulator\'s slider lets you cut only part of it.',
-  q4: 'Who pays, concretely?',
-  a4: 'The same people as today: social contributions, CSG and taxes stay at the same level. The money that funded pensions tied to past wages, means-tested benefits and tax breaks funds an equal amount for everyone.',
-  q5: 'Are the figures precise?',
-  a5: 'They are orders of magnitude. Amounts come from the 2024 social protection accounts (DREES) and the Senate\'s 2023 report on corporate subsidies; the replaced share of each line and the management savings are estimates, labelled as such.',
-  s1: 'DREES, <a href="https://drees.solidarites-sante.gouv.fr/publications-communique-de-presse/panoramas-de-la-drees/251217-protection-sociale-france-europe-2024">La protection sociale en France et en Europe en 2024</a> (2025 edition): old age and survivors €426.7bn, employment 51.1, family 65.8, housing 16.1, poverty and exclusion 34.0.',
-  s2: 'French Senate, inquiry into public subsidies to companies, July 2025: <a href="https://www.publicsenat.fr/actualites/economie/211-milliards-deuros-daides-publiques-aux-entreprises-sur-quoi-repose-le-calcul-de-la-commission-denquete-du-senat">€211bn in 2023</a>, of which €88bn in tax expenditure and €75bn in contribution cuts.',
-  s3: 'Insee, <a href="https://www.insee.fr/fr/statistiques/8719824">Bilan démographique 2025</a>: 69.1 million inhabitants on 1 January 2026. Under-18s estimated at 14.0 million.',
-  s4: '2025 budget bill, Voies et moyens annex, <a href="https://www.moneyvox.fr/impot/actualites/100196/impot-sur-le-revenu-le-top-5-des-niches-fiscales-les-plus-couteuses-en-2025">via Moneyvox</a>: home-help tax credit €6.86bn, 10% pension allowance €4.96bn.',
-  s5: 'DREES, <a href="https://drees.solidarites-sante.gouv.fr/publications-communique-de-presse/etudes-et-resultats/260506-non-recours-au-rsa-fin-2021">RSA non-take-up, end of 2021</a>: 33 to 37% of eligible households do not receive it.',
-  s6: 'Cour des comptes, <a href="https://www.actu-juridique.fr/fiscalite/fiscal-finances/fiscalite-et-famille-la-cour-des-comptes-propose-des-evolutions/">taxation and family</a>: €28bn in 2021.',
-  s7: 'DREES, <a href="https://www.drees.solidarites-sante.gouv.fr/sites/default/files/2025-12/CPS2025%20-%20Tableau%20d%C3%A9taill%C3%A9%204%20-%20Prestations%20d%C3%A9taill%C3%A9es%20de%20protection%20sociale%20par%20risque%20de%202019%20%C3%A0%202024.pdf">detailed benefits 2024</a>: sick pay €11.8bn.',
-  s8: 'DREES, <a href="https://drees.solidarites-sante.gouv.fr/publications-communique-de-presse-documents-de-reference/panoramas-de-la-drees/241030_Retraites_2024">Les retraités et les retraites</a>, 2024 edition: average pension.',
-  footer: 'A brochure to open the debate. Amounts in 2024 euros, before inflation.',
-  today: 'Today', tomorrow: 'With the lifetime salary', shareCut: 'Share cut:', perMonth: '/ month',
-  bars: ['Not working', 'Half-time at minimum wage', 'Full-time at minimum wage', '2 × minimum wage'],
-};
-const FR = {
-  title: document.title,
-  description: document.querySelector('meta[name=description]').content,
-  today: 'Aujourd\'hui', tomorrow: 'Avec le salaire à vie', shareCut: 'Part supprimée :', perMonth: '/ mois',
-  bars: ['Ne travaille pas', 'Mi-temps au SMIC', 'Temps plein au SMIC', '2 × SMIC'],
-};
-document.querySelectorAll('[data-i18n]').forEach(e => FR[e.dataset.i18n] = e.innerHTML);
-
 // Md€ 2024; share = part remplacée par le salaire à vie
 const CATS = [
-  { id: 'rev', color: 'var(--blue)',
-    fr: { name: 'Revenus de remplacement', note: 'Pension, chômage, arrêt maladie : le salaire à vie est déjà le revenu qui continue.',
-      now: 'Un âge légal, des trimestres à compter, des droits au chômage qui s\'épuisent.',
-      then: 'Versé à vie. Tu t\'arrêtes quand tu veux, tu perds ton emploi sans perdre ton revenu.' },
-    en: { name: 'Replacement incomes', note: 'Pension, unemployment, sick pay: the lifetime salary is already the income that continues.',
-      now: 'A legal retirement age, quarters to count, unemployment rights that run out.',
-      then: 'Paid for life. Stop when you want; lose your job without losing your income.' } },
-  { id: 'all', color: 'var(--green)',
-    fr: { name: 'Allocations et minima', note: 'Versés aujourd\'hui sous conditions et sur dossier, demain à tous.',
-      now: 'Un tiers des foyers qui ont droit au RSA ne le touchent pas, et l\'aide baisse quand on reprend un emploi.',
-      then: 'Automatique, sans dossier, et chaque euro gagné en travaillant s\'ajoute.' },
-    en: { name: 'Benefits and minimum incomes', note: 'Means-tested and paperwork-based today, for everyone tomorrow.',
-      now: 'A third of households entitled to the RSA, France\'s minimum income, don\'t receive it, and support shrinks when you go back to work.',
-      then: 'Automatic, no paperwork, and every euro earned from work adds up.' } },
-  { id: 'nic', color: 'var(--gold)',
-    fr: { name: 'Niches fiscales des ménages', note: 'Des réductions d\'impôt sans objet quand chacun a son propre revenu.',
-      now: 'Plus une famille gagne, plus le quotient familial lui rapporte.',
-      then: 'Chaque enfant reçoit le même montant, quel que soit le revenu de ses parents.' },
-    en: { name: 'Household tax breaks', note: 'Tax reductions with no purpose once everyone has their own income.',
-      now: 'The more a family earns, the more the family quotient saves it in tax.',
-      then: 'Every child receives the same amount, whatever their parents earn.' } },
-  { id: 'ent', color: 'var(--red)',
-    fr: { name: 'Aides aux entreprises', note: 'L\'argent public versé aux entreprises revient aux personnes.',
-      now: '2 267 dispositifs recensés par le Sénat, peu évalués, rarement conditionnés.',
-      then: 'L\'argent va aux personnes, qui le dépensent dans l\'économie réelle.' },
-    en: { name: 'Corporate subsidies', note: 'Public money paid to companies goes to people instead.',
-      now: '2,267 schemes counted by the Senate, rarely evaluated, seldom conditional.',
-      then: 'The money goes to people, who spend it in the real economy.' } },
-  { id: 'adm', color: 'var(--muted)',
-    fr: { name: 'Administration', note: 'Un seul guichet : la personne est vivante, le virement part.',
-      now: 'Des dossiers, des justificatifs, des contrôles et des trop-perçus à rembourser.',
-      then: 'Un virement par mois, le même pour tous.' },
-    en: { name: 'Administration', note: 'One single office: the person is alive, the payment goes out.',
-      now: 'Files, proofs, checks, and overpayments to pay back.',
-      then: 'One payment a month, the same for everyone.' } },
+  { id: 'rev', name: 'Revenus de remplacement', color: 'var(--blue)', note: 'Pension, chômage, arrêt maladie : le salaire à vie est déjà le revenu qui continue.',
+    now: 'Un âge légal, des trimestres à compter, des droits au chômage qui s\'épuisent.',
+    then: 'Versé à vie. Tu t\'arrêtes quand tu veux, tu perds ton emploi sans perdre ton revenu.' },
+  { id: 'all', name: 'Allocations et minima', color: 'var(--green)', note: 'Versés aujourd\'hui sous conditions et sur dossier, demain à tous.',
+    now: 'Un tiers des foyers qui ont droit au RSA ne le touchent pas, et l\'aide baisse quand on reprend un emploi.',
+    then: 'Automatique, sans dossier, et chaque euro gagné en travaillant s\'ajoute.' },
+  { id: 'nic', name: 'Niches fiscales des ménages', color: 'var(--gold)', note: 'Des réductions d\'impôt sans objet quand chacun a son propre revenu.',
+    now: 'Plus une famille gagne, plus le quotient familial lui rapporte.',
+    then: 'Chaque enfant reçoit le même montant, quel que soit le revenu de ses parents.' },
+  { id: 'ent', name: 'Aides aux entreprises', color: 'var(--red)', note: 'L\'argent public versé aux entreprises revient aux personnes.',
+    now: '2 267 dispositifs recensés par le Sénat, peu évalués, rarement conditionnés.',
+    then: 'L\'argent va aux personnes, qui le dépensent dans l\'économie réelle.' },
+  { id: 'adm', name: 'Administration', color: 'var(--muted)', note: 'Un seul guichet : la personne est vivante, le virement part.',
+    now: 'Des dossiers, des justificatifs, des contrôles et des trop-perçus à rembourser.',
+    then: 'Un virement par mois, le même pour tous.' },
 ];
 const CUTS = [
-  { cat: 'rev', id: 'ret', md: 426.7, share: .9,
-    fr: { name: 'Retraites', note: 'Vieillesse-survie. On garde ~10 % : dépendance et hébergement des personnes âgées.' },
-    en: { name: 'Pensions', note: 'Old age and survivors. We keep ~10%: long-term care and housing for the elderly.' } },
-  { cat: 'rev', id: 'cho', md: 51.1, share: .85,
-    fr: { name: 'Chômage', note: 'Risque emploi. On garde la formation et l\'insertion.' },
-    en: { name: 'Unemployment', note: 'Employment risk. We keep training and back-to-work support.' } },
-  { cat: 'rev', id: 'ij', md: 11.8, share: .5,
-    fr: { name: 'Indemnités journalières maladie', note: 'On garde la moitié : l\'arrêt maladie complète le salaire à vie au lieu de remplacer tout le revenu.' },
-    en: { name: 'Sick pay', note: 'We keep half: sick leave tops up the lifetime salary instead of replacing the whole income.' } },
-  { cat: 'rev', id: 'aah', md: 13, share: 1,
-    fr: { name: 'AAH', note: 'Estimation. Le salaire à vie égale l\'AAH à taux plein ; la compensation du handicap (PCH) reste.' },
-    en: { name: 'AAH (disabled adults\' allowance)', note: 'Estimate. The lifetime salary matches the full AAH; disability support (PCH) stays.' } },
-  { cat: 'all', id: 'fam', md: 65.8, share: .8,
-    fr: { name: 'Allocations familiales', note: 'Remplacées par le salaire enfant. On garde crèches et action sociale.' },
-    en: { name: 'Family allowances', note: 'Replaced by the child salary. We keep nurseries and social services.' } },
-  { cat: 'all', id: 'log', md: 16.1, share: 1,
-    fr: { name: 'Aides au logement', note: 'APL, ALS, ALF.' },
-    en: { name: 'Housing benefits', note: 'APL, ALS, ALF.' } },
-  { cat: 'all', id: 'pau', md: 34.0, share: .85,
-    fr: { name: 'Minima sociaux', note: 'RSA, prime d\'activité, minimum vieillesse… On garde l\'hébergement d\'urgence.' },
-    en: { name: 'Minimum incomes', note: 'RSA, in-work bonus, minimum old-age pension… We keep emergency housing.' } },
-  { cat: 'all', id: 'bou', md: 2.5, share: 1,
-    fr: { name: 'Bourses étudiantes', note: 'Estimation. Chaque étudiant majeur touche le salaire à vie.' },
-    en: { name: 'Student grants', note: 'Estimate. Every adult student receives the lifetime salary.' } },
-  { cat: 'nic', id: 'qf', md: 28, share: 1,
-    fr: { name: 'Quotient familial et conjugal', note: 'Avantages fiscaux liés à la famille (Cour des comptes, 2021). Chaque enfant et chaque conjoint a déjà son propre salaire.' },
-    en: { name: 'Family and marital quotient', note: 'Family-related tax advantages (Cour des comptes, 2021). Every child and every spouse already has their own salary.' } },
-  { cat: 'nic', id: 'abat', md: 4.96, share: 1,
-    fr: { name: 'Abattement de 10 % sur les pensions', note: 'Sans pensions, cette niche n\'a plus d\'objet.' },
-    en: { name: '10% pension tax allowance', note: 'With no pensions, this tax break has no purpose.' } },
-  { cat: 'nic', id: 'dom', md: 6.86, share: 1,
-    fr: { name: 'Crédit d\'impôt emploi à domicile', note: 'Première niche de l\'impôt sur le revenu, surtout utilisée par les ménages aisés.' },
-    en: { name: 'Home-help tax credit', note: 'The largest income-tax break, mostly used by well-off households.' } },
-  { cat: 'ent', id: 'ent', md: 211, share: 1, range: true,
-    fr: { name: 'Aides publiques aux entreprises', note: 'Ex-CICE devenu allègements de cotisations, crédits d\'impôt, niches, subventions (Sénat, 2023).' },
-    en: { name: 'Public subsidies to companies', note: 'The former CICE, now contribution cuts, plus tax credits, tax breaks and grants (Senate, 2023).' } },
-  { cat: 'adm', id: 'adm', md: 12, share: 1,
-    fr: { name: 'Organismes de gestion', note: 'Estimation : gestion de France Travail, des CAF et des caisses de retraite, moins un guichet unique.' },
-    en: { name: 'Management bodies', note: 'Estimate: running costs of France Travail, the family-benefit offices and pension funds, minus one single office.' } },
+  { cat: 'rev', id: 'ret', name: 'Retraites', md: 426.7, share: .9, note: 'Vieillesse-survie. On garde ~10 % : dépendance et hébergement des personnes âgées.' },
+  { cat: 'rev', id: 'cho', name: 'Chômage', md: 51.1, share: .85, note: 'Risque emploi. On garde la formation et l\'insertion.' },
+  { cat: 'rev', id: 'ij', name: 'Indemnités journalières maladie', md: 11.8, share: .5, note: 'On garde la moitié : l\'arrêt maladie complète le salaire à vie au lieu de remplacer tout le revenu.' },
+  { cat: 'rev', id: 'aah', name: 'AAH', md: 13, share: 1, note: 'Estimation. Le salaire à vie égale l\'AAH à taux plein ; la compensation du handicap (PCH) reste.' },
+  { cat: 'all', id: 'fam', name: 'Allocations familiales', md: 65.8, share: .8, note: 'Remplacées par le salaire enfant. On garde crèches et action sociale.' },
+  { cat: 'all', id: 'log', name: 'Aides au logement', md: 16.1, share: 1, note: 'APL, ALS, ALF.' },
+  { cat: 'all', id: 'pau', name: 'Minima sociaux', md: 34.0, share: .85, note: 'RSA, prime d\'activité, minimum vieillesse… On garde l\'hébergement d\'urgence.' },
+  { cat: 'all', id: 'bou', name: 'Bourses étudiantes', md: 2.5, share: 1, note: 'Estimation. Chaque étudiant majeur touche le salaire à vie.' },
+  { cat: 'nic', id: 'qf', name: 'Quotient familial et conjugal', md: 28, share: 1, note: 'Avantages fiscaux liés à la famille (Cour des comptes, 2021). Chaque enfant et chaque conjoint a déjà son propre salaire.' },
+  { cat: 'nic', id: 'abat', name: 'Abattement de 10 % sur les pensions', md: 4.96, share: 1, note: 'Sans pensions, cette niche n\'a plus d\'objet.' },
+  { cat: 'nic', id: 'dom', name: 'Crédit d\'impôt emploi à domicile', md: 6.86, share: 1, note: 'Première niche de l\'impôt sur le revenu, surtout utilisée par les ménages aisés.' },
+  { cat: 'ent', id: 'ent', name: 'Aides publiques aux entreprises', md: 211, share: 1, range: true, note: 'Ex-CICE devenu allègements de cotisations, crédits d\'impôt, niches, subventions (Sénat, 2023).' },
+  { cat: 'adm', id: 'adm', name: 'Organismes de gestion', md: 12, share: 1, note: 'Estimation : gestion de France Travail, des CAF et des caisses de retraite, moins un guichet unique.' },
 ];
 const POP_KIDS = 14.0, POP_ADULTS = 69.1 - POP_KIDS;  // millions
 const SMIC_NET = 1430;
 
-let lang = 'fr';
-const T = () => lang === 'en' ? EN : FR;
-const loc = () => lang === 'en' ? 'en-GB' : 'fr-FR';
-const num = (n, d = 0) => n.toLocaleString(loc(), { maximumFractionDigits: d });
-const eur = n => lang === 'en' ? '€' + num(Math.round(n)) : num(Math.round(n)) + ' €';
-const md = n => lang === 'en' ? '€' + num(n, 1) + 'bn' : num(n, 1) + ' Md€';
+const fmt = n => Math.round(n).toLocaleString('fr-FR');
+const md = n => n.toLocaleString('fr-FR', { maximumFractionDigits: 1 }) + ' Md€';
 
 const cutsEl = document.getElementById('cuts');
 const state = Object.fromEntries(CUTS.map(c => [c.id, { on: true, share: c.share }]));
@@ -406,6 +302,9 @@ CATS.forEach(k => {
   k.el = document.createElement('div');
   k.el.className = 'cat';
   k.el.style.setProperty('--c', k.color);
+  k.el.innerHTML = `<div class="cat-head"><div><h3>${k.name}</h3><small>${k.note}</small></div>
+    <div class="cat-tot"><b></b><small></small></div></div>
+    <div class="vs"><div class="now"><span>Aujourd'hui</span>${k.now}</div><div class="then"><span>Avec le salaire à vie</span>${k.then}</div></div>`;
   cutsEl.appendChild(k.el);
 });
 
@@ -413,45 +312,17 @@ CUTS.forEach(c => {
   const row = document.createElement('label');
   row.className = 'cut';
   row.innerHTML = `<input type="checkbox" checked>
-    <div><b class="name"></b><small class="note"></small>
-    ${c.range ? `<small style="margin-top:6px"><span class="share"></span> <b style="display:inline" class="pct"></b></small><input type="range" min="0" max="100" step="5" value="100">` : ''}</div>
+    <div><b>${c.name}</b><small>${c.note}</small>
+    ${c.range ? `<small style="margin-top:6px">Part supprimée : <b style="display:inline" class="pct">100 %</b></small><input type="range" min="0" max="100" step="5" value="100">` : ''}</div>
     <div class="md"></div>`;
   row.querySelector('input[type=checkbox]').addEventListener('change', e => { state[c.id].on = e.target.checked; render(); });
   const r = row.querySelector('input[type=range]');
   if (r) r.addEventListener('input', e => { state[c.id].share = e.target.value / 100; render(); });
   c.el = row;
+  CATS.find(k => k.id === c.cat).el.appendChild(row);
 });
 
-function setLang(l) {
-  lang = l;
-  const t = T();
-  document.documentElement.lang = l;
-  document.title = t.title;
-  document.querySelector('meta[name=description]').content = t.description;
-  document.querySelectorAll('[data-i18n]').forEach(e => e.innerHTML = t[e.dataset.i18n]);
-  document.querySelectorAll('.lang button').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === l));
-  CATS.forEach(k => {
-    const s = k[l];
-    k.el.innerHTML = `<div class="cat-head"><div><h3>${s.name}</h3><small>${s.note}</small></div>
-      <div class="cat-tot"><b></b><small></small></div></div>
-      <div class="vs"><div class="now"><span>${t.today}</span>${s.now}</div><div class="then"><span>${t.tomorrow}</span>${s.then}</div></div>`;
-  });
-  CUTS.forEach(c => {
-    c.el.querySelector('.name').textContent = c[l].name;
-    c.el.querySelector('.note').textContent = c[l].note;
-    const share = c.el.querySelector('.share');
-    if (share) share.textContent = t.shareCut;
-    CATS.find(k => k.id === c.cat).el.appendChild(c.el);
-  });
-  try { localStorage.setItem('lang', l); } catch (e) {}
-  const u = new URL(location.href);
-  if (l === 'fr') u.searchParams.delete('lang'); else u.searchParams.set('lang', l);
-  history.replaceState(null, '', u);
-  render();
-}
-
 function render() {
-  const t = T();
   const child = +document.getElementById('child').value;
   let budget = 0;
   CATS.forEach(k => k.md = 0);
@@ -460,49 +331,53 @@ function render() {
     c.el.classList.toggle('off', !s.on);
     c.el.querySelector('.md').textContent = md(v);
     const pct = c.el.querySelector('.pct');
-    if (pct) pct.textContent = num(Math.round(s.share * 100)) + (lang === 'en' ? '%' : ' %');
+    if (pct) pct.textContent = Math.round(s.share * 100) + ' %';
     if (s.on) { budget += v; CATS.find(k => k.id === c.cat).md += v; }
   });
   const kids = POP_KIDS * child * 12 / 1000;            // Md€
   const adult = Math.max(0, (budget - kids) * 1000 / (POP_ADULTS * 12));
-  const perAdult = v => v * 1000 / (POP_ADULTS * 12);
-  document.querySelectorAll('[data-m=adult]').forEach(e => e.textContent = eur(adult));
-  document.querySelectorAll('[data-m=child]').forEach(e => e.textContent = eur(child));
-  document.querySelectorAll('[data-n=adults]').forEach(e => e.textContent = num(POP_ADULTS, 1));
-  document.querySelectorAll('[data-n=kids]').forEach(e => e.textContent = num(POP_KIDS, 1));
+  document.querySelectorAll('[data-adult]').forEach(e => e.textContent = fmt(adult));
+  document.querySelectorAll('[data-child]').forEach(e => e.textContent = fmt(child));
   document.getElementById('tBudget').textContent = md(budget);
   document.getElementById('tKids').textContent = '− ' + md(kids);
   document.getElementById('tAdults').textContent = md(Math.max(0, budget - kids));
+  document.getElementById('nAdults').textContent = POP_ADULTS.toLocaleString('fr-FR');
+  document.getElementById('nKids').textContent = POP_KIDS.toLocaleString('fr-FR');
+  const perAdult = v => v * 1000 / (POP_ADULTS * 12);
   CATS.forEach(k => {
     k.el.querySelector('.cat-tot b').textContent = md(k.md);
-    k.el.querySelector('.cat-tot small').textContent = '≈ ' + eur(perAdult(k.md)) + ' ' + t.perMonth;
+    k.el.querySelector('.cat-tot small').textContent = '≈ ' + fmt(perAdult(k.md)) + ' € / mois';
   });
   document.getElementById('mix').innerHTML = CATS.map(k =>
-    `<i style="width:${budget ? k.md / budget * 100 : 0}%;background:${k.color}" title="${k[lang].name}"></i>`).join('');
+    `<i style="width:${budget ? k.md / budget * 100 : 0}%;background:${k.color}" title="${k.name}"></i>`).join('');
   document.getElementById('mixLegend').innerHTML = CATS.map(k =>
-    `<li><i style="background:${k.color}"></i>${k[lang].name}<span>${md(k.md)}</span></li>`).join('');
+    `<li><i style="background:${k.color}"></i>${k.name}<span>${md(k.md)}</span></li>`).join('');
   renderBars(adult);
 }
 
 function renderBars(base) {
-  const work = [0, SMIC_NET / 2, SMIC_NET, SMIC_NET * 2];
+  const rows = [
+    ['Ne travaille pas', 0], ['Mi-temps au SMIC', SMIC_NET / 2],
+    ['Temps plein au SMIC', SMIC_NET], ['2 × SMIC', SMIC_NET * 2],
+  ];
   const max = base + SMIC_NET * 2;
-  document.getElementById('bars').innerHTML = work.map((w, i) => `
-    <div class="bar-row"><div class="lbl">${T().bars[i]}</div>
+  document.getElementById('bars').innerHTML = rows.map(([l, w]) => `
+    <div class="bar-row"><div class="lbl">${l}</div>
       <div class="bar"><i class="base" style="width:${base / max * 100}%"></i><i class="work" style="width:${w / max * 100}%"></i></div>
-      <div class="tot">${eur(base + w)}</div></div>`).join('');
+      <div class="tot">${fmt(base + w)} €</div></div>`).join('');
 }
 
 document.getElementById('child').addEventListener('input', render);
-document.querySelectorAll('.lang button').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+render();
 
-function initialLang() {
-  const q = new URLSearchParams(location.search).get('lang');
-  if (q === 'fr' || q === 'en') return q;
-  try { const s = localStorage.getItem('lang'); if (s === 'fr' || s === 'en') return s; } catch (e) {}
-  return (navigator.language || 'fr').toLowerCase().startsWith('fr') ? 'fr' : 'en';
+function setTheme(t) {
+  if (t === 'system') delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = t;
+  document.querySelectorAll('.theme button').forEach(b => b.setAttribute('aria-pressed', b.dataset.theme === t));
+  try { t === 'system' ? localStorage.removeItem('theme') : localStorage.setItem('theme', t); } catch (e) {}
 }
-setLang(initialLang());
+document.querySelectorAll('.theme button').forEach(b => b.addEventListener('click', () => setTheme(b.dataset.theme)));
+setTheme(document.documentElement.dataset.theme || 'system');
 </script>
 </body>
 </html>
