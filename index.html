@@ -28,6 +28,7 @@
       --bg: #faf6ef; --paper: #fffdf8; --ink: #1d1b18; --muted: #6b645a; --line: #e6dfd2;
       --blue: #1f3fbf; --red: #d6363c; --gold: #e8a317; --green: #1f8a5b;
       --blue-soft: #e5eafc; --red-soft: #fbe6e6;
+      --c-kids: #e8a317; --c-adults: #1f3fbf; --c-pens: #d6363c;
     }
     :root { color-scheme: light; }
     @media (prefers-color-scheme: dark) {
@@ -36,6 +37,7 @@
         --bg: #14130f; --paper: #1d1b16; --ink: #f2ede4; --muted: #a59d90; --line: #36322a;
         --blue: #7d95ff; --red: #ff7a7e; --gold: #f5bd45; --green: #4fc48f;
         --blue-soft: #222a4d; --red-soft: #4a2426;
+        --c-kids: #c08a1c; --c-adults: #6b82f5; --c-pens: #ec5f66;
       }
     }
     :root[data-theme=dark] {
@@ -43,6 +45,7 @@
       --bg: #14130f; --paper: #1d1b16; --ink: #f2ede4; --muted: #a59d90; --line: #36322a;
       --blue: #7d95ff; --red: #ff7a7e; --gold: #f5bd45; --green: #4fc48f;
       --blue-soft: #222a4d; --red-soft: #4a2426;
+      --c-kids: #c08a1c; --c-adults: #6b82f5; --c-pens: #ec5f66;
     }
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.6 Inter, system-ui, sans-serif; }
@@ -127,6 +130,23 @@
     .result td { padding: 5px 0; border-top: 1px solid rgba(128,128,128,.3); }
     .result td:last-child { text-align: right; }
 
+    .tr-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
+    .tr-card { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 20px 20px 12px; position: relative; }
+    .tr-card h3 { font-size: 1.15rem; }
+    .tr-card .tr-sub { color: var(--muted); font-size: .88rem; margin: 2px 0 10px; }
+    .tr-card svg { width: 100%; height: auto; display: block; overflow: visible; }
+    .tr-card .ax { font: 11px Inter, sans-serif; fill: var(--muted); }
+    .tr-card .grid { stroke: var(--line); stroke-width: 1; }
+    .tr-card .lab { font: 600 12px Inter, sans-serif; fill: var(--ink); }
+    .tr-card .lab-in { font: 600 12px Inter, sans-serif; fill: #fff; }
+    .tr-card .cross { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
+    .tr-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .85rem; color: var(--muted); margin-bottom: 8px; }
+    .tr-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+    .tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); border-radius: 8px; padding: 6px 10px; font-size: .82rem; line-height: 1.4; white-space: nowrap; opacity: 0; transition: opacity .1s; font-variant-numeric: tabular-nums; }
+    .tip i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; }
+    .milestones { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 20px; }
+    .milestones div { border-left: 3px solid var(--blue); padding: 2px 0 2px 12px; color: var(--muted); font-size: .92rem; }
+    .milestones b { display: block; color: var(--ink); font-family: Fraunces, serif; font-size: 1.5rem; }
     .faq { display: grid; gap: 14px; margin-top: 28px; }
     details { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; }
     summary { font-weight: 700; cursor: pointer; font-size: 1.05rem; }
@@ -143,6 +163,7 @@
       .bar-row .lbl { grid-column: 1 / -1; }
       .life { flex-direction: column; }
       .vs { grid-template-columns: 1fr; }
+      .tr-charts { grid-template-columns: 1fr; }
     }
     .theme { position: absolute; top: 18px; right: 20px; display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--paper); }
     .theme button { display: grid; place-items: center; width: 36px; height: 30px; padding: 0; border: 0; background: none; color: var(--muted); cursor: pointer; }
@@ -222,13 +243,38 @@
   </div>
 </section>
 
+<section id="transition">
+  <div class="wrap">
+    <div class="kicker">La transition</div>
+    <h2>Le budget reste fixe. Le salaire monte.</h2>
+    <p class="lead">Personne ne perd ce qu'il a cotisé&nbsp;: à 63&nbsp;ans, chacun touche le plus élevé des deux, sa retraite déjà acquise ou le salaire à vie. Ces compléments coûtent cher au début, puis s'éteignent avec les générations qui les ont acquis. Le budget ne bouge pas&nbsp;: c'est le salaire de base qui monte, année après année.</p>
+    <div class="milestones" id="milestones"></div>
+    <div class="tr-charts">
+      <div class="tr-card">
+        <h3>Salaire à vie par adulte</h3>
+        <div class="tr-sub">€ par mois, selon les années depuis la réforme</div>
+        <svg id="trLine" viewBox="0 0 520 260" role="img" aria-label="Évolution du salaire à vie par adulte pendant la transition"></svg>
+        <div class="tip"></div>
+      </div>
+      <div class="tr-card">
+        <h3>Où va le budget</h3>
+        <div class="tr-sub">Md€ par an, total constant</div>
+        <div class="tr-legend"><span><i style="background:var(--c-pens)"></i>Retraites déjà acquises</span><span><i style="background:var(--c-adults)"></i>Salaire des adultes</span><span><i style="background:var(--c-kids)"></i>Salaire des enfants</span></div>
+        <svg id="trStack" viewBox="0 0 520 260" role="img" aria-label="Répartition du budget pendant la transition"></svg>
+        <div class="tip"></div>
+      </div>
+    </div>
+    <p class="sources" style="margin-top:16px">Hypothèses&nbsp;: droits à la retraite acquis au prorata des années travaillées depuis 22&nbsp;ans, pensions dispersées autour de la moyenne actuelle (≈&nbsp;1&nbsp;800&nbsp;€ par retraité, réversions comprises), population et euros constants. Le budget et le montant par enfant sont ceux du simulateur ci-dessus.</p>
+  </div>
+</section>
+
 <section>
   <div class="wrap">
     <div class="kicker">Les questions honnêtes</div>
     <h2>Ce qu'il faut regarder en face.</h2>
     <div class="faq">
       <details><summary>Qu'est-ce qui reste comme aujourd'hui&nbsp;?</summary><p>La santé (Sécurité sociale, hôpital), la compensation du handicap (PCH) et les pensions d'invalidité, la dépendance (APA), l'école, les crèches, l'hébergement d'urgence. Le salaire à vie remplace les revenus de remplacement, pas les services publics.</p></details>
-      <details><summary>Et les retraités d'aujourd'hui&nbsp;?</summary><p>La pension moyenne est d'environ 1&nbsp;600&nbsp;€ brut par mois, au-dessus du salaire à vie. Le passage se fait donc par génération&nbsp;: les droits déjà acquis restent payés, et le nouveau système monte en charge à mesure que les pensions s'éteignent. Les chiffres de cette page décrivent le système une fois installé.</p></details>
+      <details><summary>Et les retraités d'aujourd'hui&nbsp;?</summary><p>La pension moyenne est d'environ 1&nbsp;600&nbsp;€ brut par mois, au-dessus du salaire à vie. Le passage se fait donc par génération&nbsp;: les droits déjà acquis restent payés, et le salaire de base monte à mesure que ces pensions s'éteignent, à budget constant (voir <a href="#transition">la transition</a>). Les montants en tête de page décrivent le système une fois installé.</p></details>
       <details><summary>Couper les aides aux entreprises, c'est sans conséquence&nbsp;?</summary><p>Sur les 211&nbsp;Md€ recensés par le Sénat, environ 75&nbsp;Md€ sont des allègements de cotisations sur les bas salaires. Les supprimer augmente le coût du travail au niveau du SMIC. En contrepartie, chaque salarié touche déjà le salaire à vie&nbsp;: la négociation salariale change de nature. Le curseur du simulateur permet de n'en couper qu'une partie.</p></details>
       <details><summary>Qui paie, concrètement&nbsp;?</summary><p>Les mêmes qu'aujourd'hui&nbsp;: cotisations, CSG et impôts restent au même niveau. L'argent qui finançait des pensions proportionnelles aux salaires passés, des allocations sous conditions et des niches fiscales finance un montant égal pour tous.</p></details>
       <details><summary>Les chiffres sont-ils précis&nbsp;?</summary><p>Ce sont des ordres de grandeur. Les montants viennent des comptes de la protection sociale 2024 (DREES) et du rapport du Sénat sur les aides de 2023&nbsp;; la part remplacée de chaque ligne et le coût de gestion économisé sont des estimations, indiquées comme telles.</p></details>
@@ -353,6 +399,135 @@ function render() {
   document.getElementById('mixLegend').innerHTML = CATS.map(k =>
     `<li><i style="background:${k.color}"></i>${k.name}<span>${md(k.md)}</span></li>`).join('');
   renderBars(adult);
+  renderTransition(budget, kids);
+}
+
+// Transition: everyone keeps the pension rights already earned, paid from 63 as max(earned, salary).
+// Population and euros are held constant; survival is Gompertz, calibrated to a life expectancy of 83.
+const RET_AGE = 63, PENS_BUDGET = 384;  // Md€ of pensions replaced
+const SURV = (() => {
+  const B = 0.095, e0 = A => { let s = 0; for (let a = 0; a <= 110; a++) s += Math.exp(-A / B * (Math.exp(B * a) - 1)); return s; };
+  let lo = 1e-6, hi = 1e-3;
+  for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; e0(m) > 83 ? lo = m : hi = m; }
+  const A = (lo + hi) / 2;
+  return Array.from({ length: 111 }, (_, a) => Math.exp(-A / B * (Math.exp(B * a) - 1)));
+})();
+const POP = (() => {
+  const b = POP_KIDS / SURV.slice(0, 18).reduce((x, y) => x + y);
+  const p = SURV.map(x => x * b);
+  const s = POP_ADULTS / p.slice(18).reduce((x, y) => x + y);
+  return p.map((x, a) => a < 18 ? x : x * s);   // millions by age
+})();
+const RETIREES = POP.slice(RET_AGE).reduce((x, y) => x + y);
+const PBAR = PENS_BUDGET * 1000 / (RETIREES * 12);  // € / month
+const SIG = .5, MU = Math.log(PBAR) - SIG * SIG / 2;
+const erf = x => { const t = 1 / (1 + .3275911 * Math.abs(x)), y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - .284496736) * t + .254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; };
+const Ncdf = x => .5 * (1 + erf(x / Math.SQRT2));
+const excess = (f, U) => {   // E[max(0, f·p − U)], p lognormal around PBAR
+  if (f <= 0) return 0;
+  const k = U / f, d1 = (MU + SIG * SIG - Math.log(k)) / SIG;
+  return f * (PBAR * Ncdf(d1) - k * Ncdf(d1 - SIG));
+};
+const earned = a0 => Math.max(0, Math.min(1, (a0 - 22) / (RET_AGE - 22)));
+const YEARS = 60;
+
+function transition(budget, kids) {
+  const rows = [];
+  for (let t = 0; t <= YEARS; t++) {
+    let U = 1000, L = 0;
+    for (let i = 0; i < 30; i++) {
+      L = 0;
+      for (let a = RET_AGE; a <= 110; a++) {
+        const a0 = a - t;
+        if (a0 >= 18) L += POP[a] * excess(earned(a0), U) * 12 / 1000;   // Md€
+      }
+      U = Math.max(0, (budget - kids - L) * 1000 / (POP_ADULTS * 12));
+    }
+    rows.push({ t, U, pens: L, adults: U * POP_ADULTS * 12 / 1000, kids });
+  }
+  return rows;
+}
+
+const W = 520, H = 260, PAD = { l: 44, r: 12, t: 12, b: 28 };
+const X = t => PAD.l + t / YEARS * (W - PAD.l - PAD.r);
+const yScale = max => v => H - PAD.b - v / max * (H - PAD.t - PAD.b);
+const niceMax = v => {   // smallest 4-step scale above v, on 1/2/2.5/3/5 steps
+  const raw = v / 4, m = Math.pow(10, Math.floor(Math.log10(raw)));
+  return 4 * m * [1, 2, 2.5, 3, 5, 10].find(k => k * m >= raw);
+};
+
+function axes(Y, max, fmtY) {
+  let g = '';
+  for (let i = 0; i <= 4; i++) {
+    const v = max * i / 4, y = Y(v);
+    g += `<line class="grid" x1="${PAD.l}" x2="${W - PAD.r}" y1="${y}" y2="${y}"/><text class="ax" x="${PAD.l - 6}" y="${y + 4}" text-anchor="end">${fmtY(v)}</text>`;
+  }
+  for (let t = 0; t <= YEARS; t += 10) g += `<text class="ax" x="${X(t)}" y="${H - 8}" text-anchor="middle">${t === 0 ? 'An 0' : '+' + t}</text>`;
+  return g;
+}
+
+function hover(svg, rows, html) {
+  const card = svg.parentElement, tip = card.querySelector('.tip');
+  const cross = svg.querySelector('.cross');
+  svg.onmousemove = e => {
+    const r = svg.getBoundingClientRect(), k = W / r.width;
+    const x = (e.clientX - r.left) * k;
+    const t = Math.max(0, Math.min(YEARS, Math.round((x - PAD.l) / (W - PAD.l - PAD.r) * YEARS)));
+    cross.setAttribute('x1', X(t)); cross.setAttribute('x2', X(t)); cross.style.opacity = 1;
+    tip.innerHTML = html(rows[t]);
+    tip.style.opacity = 1;
+    const cr = card.getBoundingClientRect(), px = X(t) / k + r.left - cr.left;
+    tip.style.left = Math.min(px + 12, cr.width - tip.offsetWidth - 8) + 'px';
+    tip.style.top = (r.top - cr.top + 10) + 'px';
+  };
+  svg.onmouseleave = () => { tip.style.opacity = 0; cross.style.opacity = 0; };
+}
+
+function renderTransition(budget, kids) {
+  const rows = transition(budget, kids);
+  const end = rows[YEARS].U;
+  const at = v => (rows.find(r => r.U >= v) || {}).t;
+  const t1000 = at(1000), t99 = at(end * .99);
+  document.getElementById('milestones').innerHTML = `
+    <div><b>${fmt(rows[0].U)} €</b>par mois dès la première année</div>
+    ${t1000 !== undefined && t1000 > 0 ? `<div><b>1 000 €</b>passés après ${t1000} ans</div>` : ''}
+    <div><b>${fmt(end)} €</b>plein montant, atteint vers ${t99} ans</div>`;
+
+  // Line: salary per adult
+  const lmax = niceMax(Math.max(end, 1)), Yl = yScale(lmax);
+  const path = rows.map((r, i) => (i ? 'L' : 'M') + X(r.t).toFixed(1) + ' ' + Yl(r.U).toFixed(1)).join('');
+  const line = document.getElementById('trLine');
+  line.innerHTML = axes(Yl, lmax, v => fmt(v)) +
+    `<path d="${path}" fill="none" stroke="var(--c-adults)" stroke-width="2.5" stroke-linejoin="round"/>
+     <circle cx="${X(0)}" cy="${Yl(rows[0].U)}" r="4" fill="var(--c-adults)" stroke="var(--paper)" stroke-width="2"/>
+     <circle cx="${X(YEARS)}" cy="${Yl(end)}" r="4" fill="var(--c-adults)" stroke="var(--paper)" stroke-width="2"/>
+     <text class="lab" x="${X(0) + 8}" y="${Yl(rows[0].U) + 18}">${fmt(rows[0].U)} €</text>
+     <text class="lab" x="${X(YEARS) - 4}" y="${Yl(end) - 10}" text-anchor="end">${fmt(end)} €</text>
+     <line class="cross" y1="${PAD.t}" y2="${H - PAD.b}" style="opacity:0"/>`;
+  hover(line, rows, r => `${r.t ? 'An +' + r.t : 'An 0'}<br><b>${fmt(r.U)} €</b> / mois`);
+
+  // Stack: kids (bottom), adults, earned pensions (top)
+  const smax = niceMax(budget), Ys = yScale(smax), GAP = 1;
+  const band = (lo, hi) => {
+    const top = rows.map((r, i) => (i ? 'L' : 'M') + X(r.t).toFixed(1) + ' ' + (Ys(hi(r)) + (hi(r) - lo(r) > 0 ? GAP : 0)).toFixed(1)).join('');
+    const bot = rows.slice().reverse().map(r => 'L' + X(r.t).toFixed(1) + ' ' + (Ys(lo(r)) - (lo(r) > 0 ? GAP : 0)).toFixed(1)).join('');
+    return top + bot + 'Z';
+  };
+  const k = r => r.kids, ka = r => r.kids + r.adults, all = r => r.kids + r.adults + r.pens;
+  const stack = document.getElementById('trStack');
+  const r5 = rows[4], r40 = rows[40];
+  stack.innerHTML = axes(Ys, smax, v => fmt(v)) +
+    `<path d="${band(() => 0, k)}" fill="var(--c-kids)"/>
+     <path d="${band(k, ka)}" fill="var(--c-adults)"/>
+     <path d="${band(ka, all)}" fill="var(--c-pens)"/>
+     <text class="lab-in" x="${X(40)}" y="${Ys((ka(r40) + k(r40)) / 2) + 4}" text-anchor="middle">Adultes</text>
+     <text class="lab-in" x="${X(4)}" y="${Ys((all(r5) + ka(r5)) / 2) + 4}">Retraites acquises</text>
+     <text class="lab" x="${X(40)}" y="${Ys(k(r40) / 2) + 4}" text-anchor="middle" style="fill:#1d1b18">Enfants</text>
+     <line class="cross" y1="${PAD.t}" y2="${H - PAD.b}" style="opacity:0"/>`;
+  hover(stack, rows, r => `${r.t ? 'An +' + r.t : 'An 0'}<br>
+    <i style="background:var(--c-pens)"></i>Retraites acquises ${md(r.pens)}<br>
+    <i style="background:var(--c-adults)"></i>Adultes ${md(r.adults)}<br>
+    <i style="background:var(--c-kids)"></i>Enfants ${md(r.kids)}<br><b>Total ${md(r.pens + r.adults + r.kids)}</b>`);
 }
 
 function renderBars(base) {
